@@ -708,6 +708,8 @@ namespace dlib
             int filter_cols_padding
         ) 
         {
+            double startTime = now_ms();
+
             const_image_view<image_type> img(img_);
             // make sure requires clause is not broken
             DLIB_ASSERT( cell_size > 0 &&
@@ -970,7 +972,7 @@ namespace dlib
 
             const float eps = 0.0001;
             // compute features
-            for (int y = 0; y < hog_nr; y++) 
+            for (int y = 0; y < hog_nr; Fy++)
             {
                 const int yy = y+padding_rows_offset; 
                 for (int x = 0; x < hog_nc; x++) 
@@ -1044,6 +1046,7 @@ namespace dlib
                     set_hog(hog,30,xx,yy, temp[3]);
                 }
             }
+            LOG(INFO) << "impl_extract_fhog_features() takes " << now_ms() - startTime << " milliseconds.";
         }
 
     // ------------------------------------------------------------------------------------

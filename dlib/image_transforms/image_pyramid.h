@@ -928,6 +928,8 @@ namespace dlib
             out_image_type& down
         ) const
         {
+
+            double startTime = now_ms();
             // make sure requires clause is not broken
             DLIB_ASSERT(is_same_object(original, down) == false, 
                         "\t void pyramid_down::operator()"
@@ -943,6 +945,9 @@ namespace dlib
 
             set_image_size(down, ((N-1)*num_rows(original))/N, ((N-1)*num_columns(original))/N);
             resize_image(original, down);
+
+            LOG(INFO) << "pyramid_down operator() takes " << now_ms() - startTime << " milliseconds.";
+
         }
 
         template <

@@ -9,6 +9,18 @@
 #include "../array.h"
 #include "../array2d.h"
 #include "object_detector.h"
+#include <glog/logging.h>
+//#include <time.h>
+//
+//// from android samples
+///* return current time in milliseconds */
+//static double now_ms(void) {
+//
+//    struct timespec res;
+//    clock_gettime(CLOCK_REALTIME, &res);
+//    return 1000.0 * res.tv_sec + (double) res.tv_nsec / 1e6;
+//
+//}
 
 namespace dlib
 {
@@ -49,7 +61,9 @@ namespace dlib
             int filter_cols_padding
         ) const
         {
+            double startTime = now_ms();
             extract_fhog_features(img,hog,cell_size,filter_rows_padding,filter_cols_padding);
+            LOG(INFO) << "extract_fhog_features() takes " << now_ms() - startTime << " milliseconds.";
         }
 
         inline unsigned long get_num_planes (
@@ -572,6 +586,8 @@ namespace dlib
             unsigned long max_pyramid_levels
         )
         {
+            double startTime = now_ms();
+
             unsigned long levels = 0;
             rectangle rect = get_rect(img);
 
@@ -611,6 +627,8 @@ namespace dlib
                     swap(temp1,temp2);
                 }
             }
+
+            LOG(INFO) << "create_fhog_pyramid() takes " << now_ms() - startTime << " milliseconds.";
         }
     }
 
@@ -784,6 +802,8 @@ namespace dlib
             // for all pyramid levels
             for (unsigned long l = 0; l < feats.size(); ++l)
             {
+                double startTime = now_ms();
+
                 const rectangle area = apply_filters_to_fhog(w, feats[l], saliency_image);
 
                 // now search the saliency image for any detections
@@ -801,6 +821,8 @@ namespace dlib
                         }
                     }
                 }
+                LOG(INFO) << "\ndetect_from_fhog_pyramid() takes " << now_ms() - startTime << " milliseconds on pyramid level " << l;
+
             }
 
             std::sort(dets.rbegin(), dets.rend(), compare_pair_rect);
@@ -851,8 +873,11 @@ namespace dlib
         unsigned long width, height;
         compute_fhog_window_size(width,height);
 
+        LOG(INFO) << "\nstart detect_from_fhog_pyramid ";
         impl::detect_from_fhog_pyramid<pyramid_type>(feats, fe, w, thresh,
             height-2*padding, width-2*padding, cell_size, height, width, dets);
+        LOG(INFO) << "\nend detect_from_fhog_pyramid ";
+
     }
 
 // ----------------------------------------------------------------------------------------

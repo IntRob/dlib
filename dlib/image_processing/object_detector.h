@@ -8,6 +8,18 @@
 #include <vector>
 #include "box_overlap_testing.h"
 #include "full_object_detection.h"
+#include <glog/logging.h>
+#include <time.h>
+
+// from android samples
+/* return current time in milliseconds */
+static double now_ms(void) {
+
+    struct timespec res;
+    clock_gettime(CLOCK_REALTIME, &res);
+    return 1000.0 * res.tv_sec + (double) res.tv_nsec / 1e6;
+
+}
 
 namespace dlib
 {
@@ -430,13 +442,20 @@ namespace dlib
         double adjust_threshold
     ) 
     {
+
+        double startTime = now_ms();
         scanner.load(img);
+        LOG(INFO) << "scanner.load() takes " << now_ms() - startTime << " milliseconds.";
+
         std::vector<std::pair<double, rectangle> > dets;
         std::vector<rect_detection> dets_accum;
         for (unsigned long i = 0; i < w.size(); ++i)
         {
             const double thresh = w[i].w(scanner.get_num_dimensions());
+            startTime = now_ms();
             scanner.detect(w[i].get_detect_argument(), dets, thresh + adjust_threshold);
+            LOG(INFO) << "scanner.detect() takes " << now_ms() - startTime << " milliseconds for detector" << i;
+
             for (unsigned long j = 0; j < dets.size(); ++j)
             {
                 rect_detection temp;
@@ -446,6 +465,8 @@ namespace dlib
                 dets_accum.push_back(temp);
             }
         }
+
+        LOG(INFO) << "\nstart non max supression ";
 
         // Do non-max suppression
         final_dets.clear();
@@ -458,6 +479,9 @@ namespace dlib
 
             final_dets.push_back(dets_accum[i]);
         }
+
+        LOG(INFO) << "\nend non max supression ";
+
     }
 
 // ----------------------------------------------------------------------------------------
