@@ -972,7 +972,7 @@ namespace dlib
 
             const float eps = 0.0001;
             // compute features
-            for (int y = 0; y < hog_nr; Fy++)
+            for (int y = 0; y < hog_nr; y++)
             {
                 const int yy = y+padding_rows_offset; 
                 for (int x = 0; x < hog_nc; x++) 
@@ -1046,7 +1046,8 @@ namespace dlib
                     set_hog(hog,30,xx,yy, temp[3]);
                 }
             }
-            LOG(INFO) << "impl_extract_fhog_features() takes " << now_ms() - startTime << " milliseconds.";
+            LOG(INFO) << "impl_extract_fhog_features() takes " << now_ms() - startTime
+                << " milliseconds for image of size " << img.nr() << "x" << img.nc() << " pixels";
         }
 
     // ------------------------------------------------------------------------------------
