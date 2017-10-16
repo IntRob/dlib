@@ -958,6 +958,9 @@ namespace dlib
                 }
             }
 
+            double timeExtract(now_ms() - startTime);
+            LOG(INFO) << "impl_extract_fhog_features(), populate histograms part takes " << timeExtract  << " milliseconds";
+
             // compute energy in each block by summing over orientations
             for (int r = 0; r < cells_nr; ++r)
             {
@@ -1046,8 +1049,13 @@ namespace dlib
                     set_hog(hog,30,xx,yy, temp[3]);
                 }
             }
-            LOG(INFO) << "impl_extract_fhog_features() takes " << now_ms() - startTime
-                << " milliseconds for image of size " << img.nr() << "x" << img.nc() << " pixels";
+            double timeTotal(now_ms() - startTime);
+            LOG(INFO) << "impl_extract_fhog_features() takes " << timeTotal
+                << " milliseconds for image of size " << img.nr() << "x" << img.nc() << " pixels, and cell size of " << cell_size;
+
+            double populateToTotalTimeRatio(timeExtract / (timeTotal+1e-6));
+
+            LOG(INFO) << "impl_extract_fhog_features(), populate : total runtime ratio " << populateToTotalTimeRatio;
         }
 
     // ------------------------------------------------------------------------------------
